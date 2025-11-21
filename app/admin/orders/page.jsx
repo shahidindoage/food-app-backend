@@ -25,8 +25,6 @@ export default function AdminOrdersPage() {
     fetchOrders();
   }, []);
 
-  console.log(orders)
-  // Update order status
   const handleStatusChange = async (orderId, status) => {
     setUpdatingId(orderId);
     try {
@@ -35,9 +33,8 @@ export default function AdminOrdersPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-      if (res.ok) {
-        fetchOrders();
-      } else {
+      if (res.ok) fetchOrders();
+      else {
         const data = await res.json();
         alert(data.error || "Failed to update order");
       }
@@ -49,16 +46,14 @@ export default function AdminOrdersPage() {
     }
   };
 
-  // Delete order
   const handleDelete = async (orderId) => {
     if (!confirm("Are you sure you want to delete this order?")) return;
 
     setDeletingId(orderId);
     try {
       const res = await fetch(`/api/orders/${orderId}/delete`, { method: "DELETE" });
-      if (res.ok) {
-        fetchOrders();
-      } else {
+      if (res.ok) fetchOrders();
+      else {
         const data = await res.json();
         alert(data.error || "Failed to delete order");
       }
@@ -71,62 +66,81 @@ export default function AdminOrdersPage() {
   };
 
   return (
-    <div style={{ padding: 30, background: "#f6fbff", minHeight: "100vh" }}>
-      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 20 }}>Orders</h1>
+    <div style={{ padding: 30, minHeight: "100vh", background: "#fff3e0", fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ fontSize: 28, fontWeight: 700, marginBottom: 20, color: "#333" }}>Orders</h1>
 
       {loading ? (
         <p>Loading orders...</p>
       ) : orders.length === 0 ? (
         <p>No orders found.</p>
       ) : (
-        <table style={{ width: "100%", borderCollapse: "collapse" }}>
-          <thead>
-            <tr style={{ background: "#0077b6", color: "#fff" }}>
-              <th style={styles.th}>Order ID</th>
-              <th style={styles.th}>Customer</th>
-              <th style={styles.th}>Items</th>
-              <th style={styles.th}>Total</th>
-              <th style={styles.th}>Status</th>
-              <th style={styles.th}>Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {orders.map((order) => (
-              <tr key={order.id} style={{ background: "#fff", borderBottom: "1px solid #ccc" }}>
-                <td style={styles.td}>{order.id}</td>
-                <td style={styles.td}>{order.customer?.name || "Unknown"}</td>
-                <td style={styles.td}>
-                  {order.items.map((item) => (
-                    <div key={item.id}>
-                      {item.name} x {item.quantity}
-                    </div>
-                  ))}
-                </td>
-                <td style={styles.td}>₹{order.items.reduce((sum, i) => sum + i.price * i.quantity, 0)}</td>
-                <td style={styles.td}>
-                  <select
-                    value={order.status}
-                    disabled={updatingId === order.id}
-                    onChange={(e) => handleStatusChange(order.id, e.target.value)}
-                  >
-                    <option value="Pending">Pending</option>
-                    <option value="Completed">Completed</option>
-                    <option value="Cancelled">Cancelled</option>
-                  </select>
-                </td>
-                <td style={styles.td}>
-                  <button
-                    onClick={() => handleDelete(order.id)}
-                    disabled={deletingId === order.id}
-                    style={styles.deleteButton}
-                  >
-                    {deletingId === order.id ? "Deleting..." : "Delete"}
-                  </button>
-                </td>
+        <div style={{ overflowX: "auto", borderRadius: 12, boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", minWidth: 700 }}>
+            <thead>
+              <tr style={{ background: "#ff7043", color: "#fff" }}>
+                <th style={styles.th}>Order ID</th>
+                <th style={styles.th}>Customer</th>
+                <th style={styles.th}>Items</th>
+                <th style={styles.th}>Total</th>
+                <th style={styles.th}>Status</th>
+                <th style={styles.th}>Actions</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {orders.map((order) => (
+                <tr
+                  key={order.id}
+                  style={{
+                    background: "#fff",
+                    transition: "transform 0.2s, box-shadow 0.2s",
+                  }}
+                  onMouseOver={(e) => {
+                    e.currentTarget.style.transform = "translateY(-2px)";
+                    e.currentTarget.style.boxShadow = "0 4px 10px rgba(0,0,0,0.1)";
+                  }}
+                  onMouseOut={(e) => {
+                    e.currentTarget.style.transform = "translateY(0)";
+                    e.currentTarget.style.boxShadow = "none";
+                  }}
+                >
+                  <td style={styles.td}>{order.id}</td>
+                  <td style={styles.td}>{order.customer?.name || "Unknown"}</td>
+                  <td style={styles.td}>
+                    {order.items.map((item) => (
+                      <div key={item.id}>
+                        {item.name} x {item.quantity}
+                      </div>
+                    ))}
+                  </td>
+                  <td style={styles.td}>
+                    ₹{order.items.reduce((sum, i) => sum + i.price * i.quantity, 0)}
+                  </td>
+                  <td style={styles.td}>
+                    <select
+                      value={order.status}
+                      disabled={updatingId === order.id}
+                      onChange={(e) => handleStatusChange(order.id, e.target.value)}
+                      style={styles.select}
+                    >
+                      <option value="Pending">Pending</option>
+                      <option value="Completed">Completed</option>
+                      <option value="Cancelled">Cancelled</option>
+                    </select>
+                  </td>
+                  <td style={styles.td}>
+                    <button
+                      onClick={() => handleDelete(order.id)}
+                      disabled={deletingId === order.id}
+                      style={styles.deleteButton}
+                    >
+                      {deletingId === order.id ? "Deleting..." : "Delete"}
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       )}
     </div>
   );
@@ -134,19 +148,31 @@ export default function AdminOrdersPage() {
 
 const styles = {
   th: {
-    padding: "12px 8px",
+    padding: "12px 10px",
     textAlign: "left",
+    fontWeight: 600,
+    fontSize: 14,
   },
   td: {
-    padding: "12px 8px",
+    padding: "12px 10px",
     verticalAlign: "top",
+    fontSize: 14,
+    color: "#333",
   },
   deleteButton: {
     background: "#ff4d4f",
     color: "#fff",
     border: "none",
     padding: "6px 12px",
-    borderRadius: 4,
+    borderRadius: 6,
+    cursor: "pointer",
+    fontWeight: 600,
+  },
+  select: {
+    padding: "6px 10px",
+    borderRadius: 6,
+    border: "1px solid #ccc",
+    fontSize: 14,
     cursor: "pointer",
   },
 };

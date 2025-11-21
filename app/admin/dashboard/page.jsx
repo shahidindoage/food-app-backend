@@ -25,64 +25,98 @@ export default function AdminDashboard() {
   if (!analytics) return <p>Loading analytics...</p>;
 
   return (
-    <div style={{ padding: 30 }}>
-      <h1 style={{ marginBottom: 30, fontSize: 28 }}>Admin Dashboard</h1>
+    <div style={{ padding: 30, fontFamily: "Arial, sans-serif" }}>
+      <h1 style={{ marginBottom: 30, fontSize: 28, fontWeight: 700, color: "#333" }}>
+        Admin Dashboard
+      </h1>
 
       {/* Top Metrics Cards */}
       <div style={topCardsStyle}>
-        <div style={cardStyle}>Total Users<br/><span style={cardValue}>{analytics.totalUsers}</span></div>
-        <div style={cardStyle}>Total Products<br/><span style={cardValue}>{analytics.totalProducts}</span></div>
-        <div style={cardStyle}>Total Orders<br/><span style={cardValue}>{analytics.totalOrders}</span></div>
-        <div style={cardStyle}>Total Revenue<br/><span style={cardValue}>₹{analytics.totalRevenue}</span></div>
+        <Card title="Total Users" value={analytics.totalUsers} color="#ff7043" />
+        <Card title="Total Products" value={analytics.totalProducts} color="#00b894" />
+        <Card title="Total Orders" value={analytics.totalOrders} color="#0984e3" />
+        <Card title="Total Revenue" value={`₹${analytics.totalRevenue}`} color="#fd79a8" />
       </div>
 
       {/* Charts Grid */}
       <div style={chartsGridStyle}>
-        {/* Orders Last 7 Days */}
-        <div style={chartCardStyle}>
-          <h2>Orders Last 7 Days</h2>
+        <ChartCard title="Orders Last 7 Days">
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={analytics.ordersPerDay}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="orders" fill="#0077b6" />
+              <Bar dataKey="orders" fill="#ff7043" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Revenue Trend Last 30 Days */}
-        <div style={chartCardStyle}>
-          <h2>Revenue Trend (Last 30 Days)</h2>
+        <ChartCard title="Revenue Trend (Last 30 Days)">
           <ResponsiveContainer width="100%" height={250}>
             <LineChart data={analytics.revenueTrend}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="date" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="revenue" stroke="#00b894" strokeWidth={2} />
+              <Line type="monotone" dataKey="revenue" stroke="#00b894" strokeWidth={3} />
             </LineChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
 
-        {/* Top 5 Selling Products */}
-        <div style={chartCardStyle}>
-          <h2>Top 5 Selling Products</h2>
+        <ChartCard title="Top 5 Selling Products">
           <ResponsiveContainer width="100%" height={250}>
             <BarChart data={analytics.topProducts}>
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="name" />
               <YAxis />
               <Tooltip />
-              <Bar dataKey="quantity" fill="#fd79a8" />
+              <Bar dataKey="quantity" fill="#fd79a8" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
-        </div>
+        </ChartCard>
       </div>
     </div>
   );
 }
+
+// Metric Card Component
+const Card = ({ title, value, color }) => (
+  <div style={{ 
+    background: "#fff", 
+    borderRadius: 12, 
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)", 
+    padding: 20, 
+    position: "relative",
+    overflow: "hidden",
+  }}>
+    <div style={{
+      height: 5,
+      width: "100%",
+      backgroundColor: color,
+      position: "absolute",
+      top: 0,
+      left: 0,
+      borderTopLeftRadius: 12,
+      borderTopRightRadius: 12,
+    }} />
+    <p style={{ fontWeight: 600, fontSize: 16, color: "#555", marginBottom: 10 }}>{title}</p>
+    <span style={{ fontSize: 24, fontWeight: 700, color: "#333" }}>{value}</span>
+  </div>
+);
+
+// Chart Card Component
+const ChartCard = ({ title, children }) => (
+  <div style={{
+    background: "#fff",
+    padding: 20,
+    borderRadius: 12,
+    boxShadow: "0 4px 12px rgba(0,0,0,0.08)",
+  }}>
+    <h2 style={{ fontSize: 18, fontWeight: 600, marginBottom: 20, color: "#333" }}>{title}</h2>
+    {children}
+  </div>
+);
 
 // Styles
 const topCardsStyle = {
@@ -92,31 +126,8 @@ const topCardsStyle = {
   marginBottom: 40,
 };
 
-const cardStyle = {
-  background: "#fff",
-  padding: 20,
-  borderRadius: 12,
-  boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
-  textAlign: "center",
-  fontWeight: 600,
-};
-
-const cardValue = {
-  fontSize: 24,
-  fontWeight: 700,
-  marginTop: 10,
-  display: "block",
-};
-
 const chartsGridStyle = {
   display: "grid",
   gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
   gap: 30,
-};
-
-const chartCardStyle = {
-  background: "#fff",
-  padding: 20,
-  borderRadius: 12,
-  boxShadow: "0 2px 6px rgba(0,0,0,0.05)",
 };
