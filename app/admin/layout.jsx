@@ -34,11 +34,6 @@ export default function AdminLayout({ children }) {
 
   const isActive = (path) => pathname === path;
 
-  const handleLogout = async () => {
-    await fetch("/api/admin/logout", { method: "POST" });
-    window.location.href = "/admin/login";
-  };
-
   return (
     <div style={{ display: "flex", minHeight: "100vh", fontFamily: "Arial, sans-serif" }}>
       {/* Sidebar */}
@@ -58,13 +53,8 @@ export default function AdminLayout({ children }) {
           boxShadow: sidebarOpen && !isMobile ? "2px 0 6px rgba(0,0,0,0.1)" : "none",
         }}
       >
-
-       
-
-       
         {/* Close button for mobile */}
         {isMobile && sidebarOpen && (
-          
           <button
             onClick={() => setSidebarOpen(false)}
             style={{
@@ -118,27 +108,6 @@ export default function AdminLayout({ children }) {
             {link.name}
           </Link>
         ))}
-
-        {sidebarOpen && (
-          <button
-            onClick={handleLogout}
-            style={{
-              marginTop: "auto",
-              padding: "12px 14px",
-              backgroundColor: "#d32f2f",
-              color: "#fff",
-              border: "none",
-              borderRadius: 8,
-              cursor: "pointer",
-              fontWeight: 600,
-              transition: "background 0.2s",
-            }}
-            onMouseOver={(e) => (e.target.style.backgroundColor = "#b71c1c")}
-            onMouseOut={(e) => (e.target.style.backgroundColor = "#d32f2f")}
-          >
-            Logout
-          </button>
-        )}
       </aside>
 
       {/* Main content */}

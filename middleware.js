@@ -9,24 +9,24 @@ export function middleware(req) {
   // ---------------------------
   // 1. Admin routes protection
   // ---------------------------
-  if (pathname.startsWith("/admin")) {
-    // Allow login page and API routes
-    if (
-      pathname.startsWith("/admin/login") ||
-      pathname.startsWith("/api/admin")
-    ) {
-      return NextResponse.next();
-    }
+  // if (pathname.startsWith("/admin")) {
+  //   // Allow login page and API routes
+  //   if (
+  //     pathname.startsWith("/admin/login") ||
+  //     pathname.startsWith("/api/admin")
+  //   ) {
+  //     return NextResponse.next();
+  //   }
 
-    // Check admin cookie
-    const adminCookie = req.cookies.get("admin")?.value;
-    if (adminCookie !== "true") {
-      const loginUrl = new URL("/admin/login", req.url);
-      return NextResponse.redirect(loginUrl);
-    }
+  //   // Check admin cookie
+  //   const adminCookie = req.cookies.get("admin")?.value;
+  //   if (adminCookie !== "true") {
+  //     const loginUrl = new URL("/admin/login", req.url);
+  //     return NextResponse.redirect(loginUrl);
+  //   }
 
-    return NextResponse.next();
-  }
+  //   return NextResponse.next();
+  // }
 
   // ---------------------------
   // 2. Customer routes protection
@@ -55,7 +55,7 @@ export function middleware(req) {
 // Apply middleware to admin and customer routes
 export const config = {
   matcher: [
-    "/admin/:path*",
+    
     "/shop",
     "/checkout",
     "/product/:path*",
